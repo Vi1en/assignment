@@ -4,7 +4,7 @@ import {
   SCORE_MAX,
   SCORE_MIN,
   SCORE_WINDOW,
-} from "./constants";
+} from "./constants.js";
 
 export const emailSchema = z.string().email().max(255);
 

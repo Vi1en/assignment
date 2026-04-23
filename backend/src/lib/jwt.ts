@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import type { SignOptions } from "jsonwebtoken";
 import { config } from "../config.js";
 
 export type AccessPayload = {
@@ -7,8 +8,9 @@ export type AccessPayload = {
 };
 
 export function signAccessToken(payload: AccessPayload): string {
+  const expiresIn = config.jwtAccessExpires as SignOptions["expiresIn"];
   return jwt.sign(payload, config.jwtAccessSecret, {
-    expiresIn: config.jwtAccessExpires,
+    expiresIn,
     issuer: "orbit-backend",
     audience: "orbit-frontend",
   });
@@ -23,8 +25,9 @@ export function verifyAccessToken(token: string): AccessPayload {
 }
 
 export function signRefreshToken(userId: string): string {
+  const expiresIn: SignOptions["expiresIn"] = `${config.jwtRefreshExpiresDays}d`;
   return jwt.sign({ sub: userId }, config.jwtRefreshSecret, {
-    expiresIn: `${config.jwtRefreshExpiresDays}d`,
+    expiresIn,
     issuer: "orbit-backend",
     audience: "orbit-refresh",
   });

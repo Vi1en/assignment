@@ -9,6 +9,12 @@ import { HttpError } from "../middleware/errorHandler.js";
 
 const router = Router();
 
+function readSingleParam(param: string | string[] | undefined): string | null {
+  if (typeof param === "string") return param;
+  if (Array.isArray(param) && typeof param[0] === "string") return param[0];
+  return null;
+}
+
 async function ensureOpenDraw(year: number, month: number) {
   const existing = await prisma.draw.findUnique({
     where: { year_month: { year, month } },
@@ -85,8 +91,13 @@ router.get("/history/me", requireAuth, async (req: AuthedRequest, res, next) => 
 
 router.get("/:drawId/me", requireAuth, async (req: AuthedRequest, res, next) => {
   try {
+    const drawId = readSingleParam(req.params.drawId as string | string[] | undefined);
+    if (!drawId) {
+      next(new HttpError(400, "Invalid draw id"));
+      return;
+    }
     const entry = await prisma.drawEntry.findFirst({
-      where: { drawId: req.params.drawId, userId: req.userId },
+      where: { drawId, userId: req.userId },
     });
     res.json({
       entry: entry
@@ -107,13 +118,18 @@ router.post(
   requireSubscription,
   async (req: AuthedRequest, res, next) => {
     try {
+      const drawId = readSingleParam(req.params.drawId as string | string[] | undefined);
+      if (!drawId) {
+        next(new HttpError(400, "Invalid draw id"));
+        return;
+      }
       const parsed = drawEntrySchema.safeParse(req.body);
       if (!parsed.success) {
         next(new HttpError(400, parsed.error.flatten().formErrors.join("; ")));
         return;
       }
       const draw = await prisma.draw.findUnique({
-        where: { id: req.params.drawId },
+        where: { id: drawId },
       });
       if (!draw || draw.executedAt) {
         next(new HttpError(400, "Draw not open"));

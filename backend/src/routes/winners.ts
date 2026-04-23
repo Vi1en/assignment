@@ -7,8 +7,19 @@ import { HttpError } from "../middleware/errorHandler.js";
 
 const router = Router();
 
+function readSingleParam(param: string | string[] | undefined): string | null {
+  if (typeof param === "string") return param;
+  if (Array.isArray(param) && typeof param[0] === "string") return param[0];
+  return null;
+}
+
 router.post("/:claimId/proof", requireAuth, async (req: AuthedRequest, res, next) => {
   try {
+    const claimId = readSingleParam(req.params.claimId as string | string[] | undefined);
+    if (!claimId) {
+      next(new HttpError(400, "Invalid claim id"));
+      return;
+    }
     const parsed = winnerProofSchema.safeParse(req.body);
     if (!parsed.success) {
       next(new HttpError(400, parsed.error.flatten().formErrors.join("; ")));
@@ -16,7 +27,7 @@ router.post("/:claimId/proof", requireAuth, async (req: AuthedRequest, res, next
     }
     const claim = await prisma.winnerClaim.findFirst({
       where: {
-        id: req.params.claimId,
+        id: claimId,
         userId: req.userId,
       },
     });

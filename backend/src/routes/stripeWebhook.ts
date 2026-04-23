@@ -4,9 +4,7 @@ import { config } from "../config.js";
 import { prisma } from "../lib/prisma.js";
 
 function getStripe(): Stripe {
-  return new Stripe(config.stripeSecretKey, {
-    apiVersion: "2024-06-20",
-  });
+  return new Stripe(config.stripeSecretKey);
 }
 
 export async function handleStripeWebhook(req: Request, res: Response) {

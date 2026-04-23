@@ -11,7 +11,7 @@ const router = Router();
 
 function getStripe(): Stripe | null {
   if (!config.stripeSecretKey) return null;
-  return new Stripe(config.stripeSecretKey, { apiVersion: "2024-06-20" });
+  return new Stripe(config.stripeSecretKey);
 }
 
 router.get("/config", (_req, res) => {
