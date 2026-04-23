@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "postinstall": "prisma generate",
+    "prebuild": "npm --prefix ../packages/utils run build",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "node -e \"console.log('lint TBD')\"",
