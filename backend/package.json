@@ -11,7 +11,10 @@
     "start": "node dist/index.js",
     "lint": "node -e \"console.log('lint TBD')\"",
     "test": "vitest run",
-    "prisma": "prisma"
+    "prisma": "prisma",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:setup": "prisma db push && prisma db seed"
   },
   "dependencies": {
     "@orbit/utils": "file:../packages/utils",

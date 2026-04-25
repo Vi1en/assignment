@@ -5,7 +5,7 @@ services:
     runtime: node
     plan: starter
     rootDir: .
-    buildCommand: npm install --include=dev && npm run db:generate && npm run build -w backend
+    buildCommand: npm install --include=dev && npm run db:push && npm run db:seed && npm run build -w backend
     startCommand: npm run start -w backend
     envVars:
       - key: NODE_ENV
